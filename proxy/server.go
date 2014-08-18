@@ -52,7 +52,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	log.Info("server run %v listen at [%v]", netProto, s.addr)
 	return s, nil
 }
 
