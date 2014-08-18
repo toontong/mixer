@@ -923,3 +923,15 @@ func (*Admin) IStatement() {}
 func (node *Admin) Format(buf *TrackedBuffer) {
 	buf.Fprintf("admin %s(%v)", node.Name, node.Values)
 }
+
+type Show struct {
+	Name        string
+	From        ValExpr
+	LikeOrWhere Expr
+}
+
+func (*Show) IStatement() {}
+
+func (node *Show) Format(buf *TrackedBuffer) {
+	buf.Fprintf("show %s %v %v", node.Name, node.From, node.LikeOrWhere)
+}

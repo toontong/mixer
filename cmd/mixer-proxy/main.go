@@ -60,7 +60,6 @@ func main() {
 	svr.Run()
 }
 
-
 func setLogLevel(level string){
 	switch strings.ToLower(level) {
 	case "debug":log.SetLevel(log.LevelDebug)

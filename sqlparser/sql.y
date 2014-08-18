@@ -96,6 +96,10 @@ var (
 // Mixer admin
 %token <empty> ADMIN
 
+// Show
+%token <empty> SHOW
+%token <empty> DATABASES TABLES
+
 // DDL Tokens
 %token <empty> CREATE ALTER DROP RENAME
 %token <empty> TABLE INDEX VIEW TO IGNORE IF UNIQUE USING
@@ -153,7 +157,11 @@ var (
 
 %type <statement> begin_statement commit_statement rollback_statement
 %type <statement> replace_statement
+%type <statement> show_statement
 %type <statement> admin_statement
+
+%type <valExpr> from_opt
+%type <expr> like_or_where_opt
 
 %%
 
@@ -180,6 +188,7 @@ command:
 | commit_statement
 | rollback_statement
 | replace_statement
+| show_statement
 | admin_statement
 
 select_statement:
@@ -274,6 +283,16 @@ admin_statement:
   ADMIN sql_id '(' value_expression_list ')'
   {
     $$ = &Admin{Name : $2, Values : $4}
+  }
+
+show_statement:
+  SHOW DATABASES 
+  {
+    $$ = &Show{Name: "databases"}
+  }
+| SHOW TABLES from_opt like_or_where_opt 
+  {
+    $$ = &Show{Name: "tables", From: $3, LikeOrWhere: $4}
   }
 
 create_statement:
@@ -559,6 +578,28 @@ where_expression_opt:
     $$ = nil
   }
 | WHERE boolean_expression
+  {
+    $$ = $2
+  }
+
+like_or_where_opt:
+  {
+    $$ = nil
+  }
+| WHERE boolean_expression
+  {
+    $$ = $2
+  }
+| LIKE value_expression
+  {
+    $$ = $2
+  }
+
+from_opt:
+  {
+    $$ = nil
+  }
+| FROM value_expression
   {
     $$ = $2
   }
